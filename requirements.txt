@@ -10,3 +10,5 @@ mypy>=0.981
 jupyter>=1.0.0
 matplotlib>=3.5.0
 seaborn>=0.11.0
+wordcloud>=1.8.1
+Pillow>=9.0.0
