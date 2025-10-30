@@ -1,9 +1,22 @@
 """
 Visualization utilities for spam detection analysis.
 """
+import logging
+from collections import Counter
+
 import plotly.express as px
 import plotly.graph_objects as go
-from wordcloud import WordCloud
+
+# Optional dependency: wordcloud. Provide a graceful fallback when unavailable.
+try:
+    from wordcloud import WordCloud  # type: ignore
+    _HAS_WORDCLOUD = True
+except Exception:  # pragma: no cover - environment dependent
+    WordCloud = None
+    _HAS_WORDCLOUD = False
+    logging.getLogger(__name__).warning(
+        "wordcloud package not available; falling back to bar-chart summary"
+    )
 import numpy as np
 import pandas as pd
 from sklearn.metrics import confusion_matrix, roc_curve, auc
@@ -16,10 +29,35 @@ def plot_wordcloud(text, title='Word Cloud'):
         text (str): Text to visualize
         title (str): Plot title
     """
-    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
-    
-    fig = px.imshow(wordcloud)
-    fig.update_layout(title=title)
+    if _HAS_WORDCLOUD and WordCloud is not None:
+        wordcloud = WordCloud(width=800, height=400, background_color='white').generate(
+            text
+        )
+        # WordCloud exposes an image array; use px.imshow to display it
+        fig = px.imshow(wordcloud.to_array())
+        fig.update_layout(title=title)
+        fig.update_xaxes(showticklabels=False)
+        fig.update_yaxes(showticklabels=False)
+        return fig
+
+    # Fallback: show top N words as a bar chart
+    words = [w.strip() for w in str(text).lower().split() if w.strip()]
+    top_n = 30
+    counts = Counter(words).most_common(top_n)
+    if not counts:
+        # Empty input: return an empty figure with a message
+        fig = go.Figure()
+        fig.update_layout(title=f"{title} (no words to display)")
+        return fig
+
+    df = px.data.tips()  # small dummy to satisfy px API when empty — will be replaced
+    # Build a DataFrame-like structure for px.bar
+    words_list, counts_list = zip(*counts)
+    import pandas as pd
+
+    df = pd.DataFrame({"word": words_list, "count": counts_list})
+    fig = px.bar(df, x="word", y="count", title=f"{title} (fallback - top words)")
+    fig.update_layout(xaxis_tickangle=-45, margin=dict(b=140))
     return fig
 
 def plot_feature_importance(model, feature_names):
