@@ -77,6 +77,23 @@ On app startup the code will attempt to download these files into `models/` and 
 
 Security note: For private artifacts use presigned URLs or a secured storage and set the URLs as Streamlit secrets; avoid committing credentials to the repository.
 
+## Publishing trained artifacts (convenience)
+
+If you trained a model locally and want to publish it as a GitHub Release for Streamlit Cloud to download, there is a convenience script included.
+
+- `scripts/publish_model.ps1` — PowerShell script that uses GitHub CLI `gh` to create a release and upload the two artifacts produced by `src/train.py`.
+
+Prerequisites:
+- Install GitHub CLI and login: `gh auth login`
+
+Example (PowerShell):
+```pwsh
+# from repo root
+.\scripts\publish_model.ps1 -ModelPath models\spam_detector.joblib -VectorizerPath models\spam_detector_vectorizer.joblib -Tag v1.0.0 -ReleaseName "v1.0.0 - Spam model"
+```
+
+After creating the release, open the release page and copy the asset URLs. Use those URLs as `MODEL_URL` and `VECTORIZER_URL` in Streamlit Cloud (App Settings → Advanced → Environment variables) so the app will download artifacts at startup.
+
 ## Contributing and OpenSpec
 
 Follow the OpenSpec workflow documented in the `openspec/` folder for proposing features. Create feature branches from `main`, add tests, and submit pull requests.
