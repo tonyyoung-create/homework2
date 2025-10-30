@@ -26,6 +26,15 @@ This project implements a reproducible, end-to-end spam email detection pipeline
 - The project is ready for deployment to GitHub and Streamlit Cloud.
 - See below for deployment instructions.
 
+## Recent fixes (local workspace)
+- Added runtime dependency fixes: `wordcloud`, `Pillow`, and `joblib` were added to `requirements.txt` to ensure Streamlit Cloud and local runs install required packages.
+- Hardened `src/visualization.py` with an import guard for `wordcloud` and a bar-chart fallback to avoid import-time crashes.
+- Fixed CSV quoting in `data/sample_emails.csv` so `pandas.read_csv` reads `label` and `text` correctly.
+- Normalized imports and improved robustness in `src/train.py` and `src/app.py` (safe model/vectorizer checks, better probability formatting, added batch and performance pages).
+- Unit tests (`tests/test_preprocessing.py`) run and passed locally.
+
+These changes were committed and pushed to the repository's `main` branch. If you deploy to Streamlit Cloud, it will pick up the latest `requirements.txt` and code on the `main` branch.
+
 ---
 
 # GitHub + Streamlit Deployment Steps
@@ -43,6 +52,10 @@ This project implements a reproducible, end-to-end spam email detection pipeline
 - Configure environment variables/secrets if needed (e.g., for email APIs).
 - Click "Deploy". Streamlit Cloud will install dependencies and launch the app.
 
+Notes for a successful deploy:
+- Make sure `requirements.txt` is up to date (it now includes `wordcloud`, `Pillow`, `joblib`).
+- If your app fails on Streamlit Cloud, open the app logs (Settings → Logs) to see dependency install errors or traceback; common fixes are adding missing packages to `requirements.txt` or increasing the Python version in Streamlit settings.
+
 ## 3. Continuous Integration (CI)
 - GitHub Actions will run tests on every push via `.github/workflows/python-ci.yml`.
 - Ensure all tests pass before merging PRs.
@@ -50,6 +63,18 @@ This project implements a reproducible, end-to-end spam email detection pipeline
 ## 4. Maintenance
 - Update `requirements.txt` and documentation as needed.
 - Use the `openspec/` directory for proposals, feature tracking, and collaborative planning.
+
+Local run & debug commands (PowerShell)
+```pwsh
+# install deps
+python -m pip install -r requirements.txt
+
+# run tests
+python -m pytest -q
+
+# run the Streamlit app locally
+streamlit run src/app.py
+```
 
 ---
 
