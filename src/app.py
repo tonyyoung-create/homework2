@@ -93,7 +93,20 @@ def process_single_email(content):
     prediction, probability = predict(' '.join(tokens), model, vectorizer)
     st.subheader("Prediction")
     st.write(f"Label: {prediction}")
-    st.write(f"Probability: {probability}")
+
+    # Display probability in a user-friendly way
+    if probability is None:
+        st.write("Probability: not available for this model")
+    elif hasattr(probability, '__iter__'):
+        # Binary classification: show probability for positive class if available
+        try:
+            prob_positive = float(probability[1])
+            st.write(f"Probability (spam): {prob_positive:.3f}")
+        except Exception:
+            # Fallback: show full probability array
+            st.write(f"Probability: {list(probability)}")
+    else:
+        st.write(f"Probability: {float(probability):.3f}")
     
 def show_batch_analysis():
     st.header("Batch Email Analysis")

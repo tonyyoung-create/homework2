@@ -17,7 +17,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
-from src.preprocessing import preprocess_email
+from preprocessing import preprocess_email
 
 DATA_PATH = os.path.join('data', 'data.csv')
 SAMPLE_PATH = os.path.join('data', 'sample_emails.csv')
