@@ -4,6 +4,7 @@ Model loading and prediction functionality.
 import os
 import joblib
 import numpy as np
+import requests
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
 
@@ -17,6 +18,33 @@ def load_model(model_path='models/spam_detector.joblib'):
     Returns:
         tuple: (model, vectorizer)
     """
+    # If model file is missing, attempt to fetch from environment-provided URLs
+    if not os.path.exists(model_path):
+        model_url = os.environ.get('MODEL_URL')
+        vec_url = os.environ.get('VECTORIZER_URL')
+        if model_url and vec_url:
+            os.makedirs(os.path.dirname(model_path), exist_ok=True)
+            try:
+                # Download model
+                r = requests.get(model_url, stream=True, timeout=30)
+                r.raise_for_status()
+                with open(model_path, 'wb') as f:
+                    for chunk in r.iter_content(chunk_size=8192):
+                        if chunk:
+                            f.write(chunk)
+
+                # Download vectorizer
+                vec_path = model_path.replace('.joblib', '_vectorizer.joblib')
+                r = requests.get(vec_url, stream=True, timeout=30)
+                r.raise_for_status()
+                with open(vec_path, 'wb') as f:
+                    for chunk in r.iter_content(chunk_size=8192):
+                        if chunk:
+                            f.write(chunk)
+            except Exception:
+                # If download fails, continue and return (None, None) below
+                pass
+
     if not os.path.exists(model_path):
         return None, None
 
