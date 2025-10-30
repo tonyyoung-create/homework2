@@ -4,10 +4,10 @@
 Enhanced Spam Email Detection System
 
 ## Tech Stack
-- **Language**: Python 3.8+
-- **ML Framework**: scikit-learn, TensorFlow
-- **Visualization**: Matplotlib, Plotly, Streamlit
-- **Testing**: pytest
+- **Language**: Python 3.11+ (tested on 3.13 in local environment)
+- **ML Framework**: scikit-learn (primary), TensorFlow (optional)
+- **Visualization**: Plotly, Matplotlib, Streamlit
+- **Testing**: pytest, mypy (type checks)
 - **Development Tools**: Jupyter Notebooks, VS Code
 
 ## Project Goals
@@ -59,12 +59,20 @@ attribution guidance.
 
 ## Dependencies
 Core dependencies are managed in `requirements.txt`:
+Core dependencies are managed in `requirements.txt`. Recent runtime additions were made to reduce deploy failures; ensure `requirements.txt` includes:
+
 - scikit-learn
-- tensorflow
 - pandas
 - numpy
 - streamlit
 - plotly
+- joblib
+- wordcloud
+- Pillow
 - pytest
-- black (for formatting)
-- mypy (for type checking)
+- black
+- mypy
+
+Notes:
+- The project was tested locally with Python 3.13; for CI and Streamlit Cloud, Python 3.11+ is recommended unless your deployment target supports newer versions.
+- The repository includes a CRISP-DM notebook (`notebooks/01-crisp-dm-spam.ipynb`) and a `src/train.py` script to produce model artifacts.

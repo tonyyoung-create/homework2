@@ -1,37 +1,73 @@
 # Enhanced Spam Email Detection System
 
-This project extends the spam email detection system from Chapter 3 of the Packt "Hands-On Artificial Intelligence for Cybersecurity" repository with enhanced preprocessing and rich visualizations.
+This repository is an end-to-end, reproducible spam email detection project inspired by Chapter 3 of the Packt book "Hands-On Artificial Intelligence for Cybersecurity". It provides preprocessing, training, visualizations, a Streamlit UI, and CI-ready tests.
 
-## Project Structure
+## Project layout
+
+Top-level structure (important folders):
 
 ```
 .
-├── data/               # Dataset storage
-├── models/            # Trained model artifacts
-├── notebooks/         # Jupyter notebooks for analysis
-├── openspec/          # OpenSpec documentation
-├── src/              # Source code
-└── tests/            # Test files
+├── data/               # Dataset (sample or user-provided)
+├── models/             # Trained model artifacts (gitignored - add to release)
+├── notebooks/          # CRISP-DM Jupyter notebook
+├── openspec/           # OpenSpec documentation and proposals
+├── src/                # Source code (app, preprocessing, model, train, viz)
+└── tests/               # Unit tests
 ```
 
-## Features
-- Enhanced email preprocessing pipeline
-- Rich visualization components
-- CLI and Streamlit interfaces
-- Comprehensive metrics and analysis tools
+## Key features
 
-## Setup
-1. Clone the repository
-2. Install dependencies: `pip install -r requirements.txt`
-3. Run Streamlit app: `streamlit run src/app.py`
+- CRISP-DM notebook for exploratory analysis and experiment notes
+- Robust preprocessing with NLTK fallback (no network required)
+- End-to-end training script (`src/train.py`) that saves model artifacts
+- Streamlit app (`src/app.py`) for single/batch prediction and performance analysis
+- Visualization utilities with graceful fallbacks when optional packages are missing
+- Unit tests and GitHub Actions CI
 
-## Development
-This project follows the OpenSpec workflow for feature proposals and development. See `openspec/` directory for more details.
+## Quickstart (local)
 
-## Acknowledgements and License
-This project was developed by extending examples from the Packt book
-"Hands-On Artificial Intelligence for Cybersecurity" and the associated
-GitHub repository (PacktPublishing/Hands-On-Artificial-Intelligence-for-Cybersecurity).
-The original Packt repository is released under the MIT License. See
-`ACKNOWLEDGEMENTS.md` for details and license notes. Preserve the original
-copyright and permission notice when redistributing derived code.
+1. Clone the repo:
+
+```pwsh
+git clone https://github.com/tonyyoung-create/homework2.git
+cd homework2
+```
+
+2. Install dependencies (recommended to use a virtualenv):
+
+```pwsh
+python -m pip install -r requirements.txt
+```
+
+3. Run tests:
+
+```pwsh
+python -m pytest -q
+```
+
+4. Run the Streamlit app:
+
+```pwsh
+streamlit run src/app.py
+```
+
+5. (Optional) Train a model locally and save artifacts:
+
+```pwsh
+python src/train.py
+# This will create files under `models/` (spam_detector.joblib and spam_detector_vectorizer.joblib)
+```
+
+## Notes about deployment
+
+- When deploying to Streamlit Cloud, set the main file to `src/app.py` and ensure `requirements.txt` is up-to-date. The repository currently includes runtime fixes (e.g., `wordcloud`, `Pillow`, `joblib`) to reduce deployment failures.
+- Model artifacts are not committed to the repo by default. Add trained artifacts to a GitHub release or to the `models/` directory in your deployment environment.
+
+## Contributing and OpenSpec
+
+Follow the OpenSpec workflow documented in the `openspec/` folder for proposing features. Create feature branches from `main`, add tests, and submit pull requests.
+
+## License & Acknowledgements
+
+This project builds on examples from the Packt book "Hands-On Artificial Intelligence for Cybersecurity". See `ACKNOWLEDGEMENTS.md` for attribution and license details.
