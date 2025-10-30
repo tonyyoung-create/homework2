@@ -56,6 +56,15 @@ Notes for a successful deploy:
 - Make sure `requirements.txt` is up to date (it now includes `wordcloud`, `Pillow`, `joblib`).
 - If your app fails on Streamlit Cloud, open the app logs (Settings → Logs) to see dependency install errors or traceback; common fixes are adding missing packages to `requirements.txt` or increasing the Python version in Streamlit settings.
 
+Model provisioning during deployment
+
+To avoid committing large model binaries to the repository, the app can download trained artifacts at startup if the local `models/` directory is empty. Provide two environment variables in Streamlit Cloud (App Settings → Advanced):
+
+- `MODEL_URL` — URL to `spam_detector.joblib`
+- `VECTORIZER_URL` — URL to `spam_detector_vectorizer.joblib`
+
+These can be raw GitHub URLs (for small files), public S3 URLs, or presigned URLs for private storage. On startup the app will try to download both files into `models/` and then load them. If this fails, it will warn and continue without predictions.
+
 ## 3. Continuous Integration (CI)
 - GitHub Actions will run tests on every push via `.github/workflows/python-ci.yml`.
 - Ensure all tests pass before merging PRs.

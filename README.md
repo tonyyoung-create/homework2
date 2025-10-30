@@ -64,6 +64,19 @@ python src/train.py
 - When deploying to Streamlit Cloud, set the main file to `src/app.py` and ensure `requirements.txt` is up-to-date. The repository currently includes runtime fixes (e.g., `wordcloud`, `Pillow`, `joblib`) to reduce deployment failures.
 - Model artifacts are not committed to the repo by default. Add trained artifacts to a GitHub release or to the `models/` directory in your deployment environment.
 
+### Automatic model provisioning (optional)
+
+The app supports downloading model artifacts at startup when they are not present locally. This is useful for Streamlit Cloud deployments where you prefer not to commit large binary files.
+
+1. Upload your artifacts (the two files created by `src/train.py`) somewhere accessible (GitHub release assets, S3, or signed URLs).
+2. In Streamlit Cloud (App Settings → Advanced settings), add environment variables:
+	- `MODEL_URL` — URL to `spam_detector.joblib`
+	- `VECTORIZER_URL` — URL to `spam_detector_vectorizer.joblib`
+
+On app startup the code will attempt to download these files into `models/` and then load them. If download fails or the env vars are not set, the app will show a warning and skip predictions.
+
+Security note: For private artifacts use presigned URLs or a secured storage and set the URLs as Streamlit secrets; avoid committing credentials to the repository.
+
 ## Contributing and OpenSpec
 
 Follow the OpenSpec workflow documented in the `openspec/` folder for proposing features. Create feature branches from `main`, add tests, and submit pull requests.
